@@ -16,6 +16,9 @@ class Reference
     #[ORM\Column(length: 10)]
     private ?string $code = null;
 
+    #[ORM\OneToOne(mappedBy: 'reference', cascade: ['persist', 'remove'])]
+    private ?Loan $loan = null;
+
     public function __construct()
     {
         if ($this->id === null) {
@@ -42,6 +45,23 @@ class Reference
     public function setCode(string $code): static
     {
         $this->code = $code;
+        return $this;
+    }
+
+    public function getLoan(): ?Loan
+    {
+        return $this->loan;
+    }
+
+    public function setLoan(Loan $loan): static
+    {
+        // set the owning side of the relation if necessary
+        if ($loan->getReference() !== $this) {
+            $loan->setReference($this);
+        }
+
+        $this->loan = $loan;
+
         return $this;
     }
 }

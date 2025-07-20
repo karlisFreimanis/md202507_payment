@@ -33,7 +33,7 @@ class Customer
     /**
      * @var Collection<int, Loan>
      */
-    #[ORM\OneToMany(targetEntity: Loan::class, mappedBy: 'Loan')]
+    #[ORM\OneToMany(targetEntity: Loan::class, mappedBy: 'customer')]
     private Collection $loans;
 
     public function __construct()
@@ -127,7 +127,7 @@ class Customer
     {
         if (!$this->loans->contains($loan)) {
             $this->loans->add($loan);
-            $loan->setLoan($this);
+            $loan->setCustomer($this);
         }
 
         return $this;
@@ -137,8 +137,8 @@ class Customer
     {
         if ($this->loans->removeElement($loan)) {
             // set the owning side to null (unless already changed)
-            if ($loan->getLoan() === $this) {
-                $loan->setLoan(null);
+            if ($loan->getCustomer() === $this) {
+                $loan->setCustomer(null);
             }
         }
 
