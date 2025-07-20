@@ -38,7 +38,7 @@ RUN apk add --no-cache pcre-dev $PHPIZE_DEPS && \
 
 # Configure and install PHP extensions
 RUN docker-php-ext-configure gd --with-jpeg --with-freetype \
-    && docker-php-ext-install pdo pdo_mysql zip xsl gd intl opcache exif mbstring # pdo_pgsql
+    && docker-php-ext-install pdo pdo_mysql zip xsl gd intl opcache exif mbstring bcmath # pdo_pgsql
 
 # Set timezone
 RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo ${TIMEZONE} > /etc/timezone \
