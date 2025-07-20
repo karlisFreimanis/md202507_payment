@@ -59,46 +59,4 @@ class BaseApiController extends AbstractController
     {
         return new JsonResponse(['ping' => true]);
     }
-
-    /**
-     * @param ConstraintViolationListInterface $validationErrors
-     * @param callable                         $callback
-     * @return JsonResponse
-     */
-    protected function handleRequest(
-        ConstraintViolationListInterface $validationErrors,
-        callable                         $callback,
-    ): JsonResponse {
-        if ($validationErrors->count() > 0) {
-            $errorMessages = [];
-            foreach (range(1, $validationErrors->count()) as $counter) {
-                $validationError = $validationErrors->get($counter - 1);
-                $errorMessages[] = $validationError->getPropertyPath() . ': ' . $validationError->getMessage();
-            }
-            return $this->handleError($errorMessages, Response::HTTP_BAD_REQUEST);
-        }
-
-        try {
-            return $callback();
-        } catch (ApiValidationException $apiValidationException) {
-            return $this->handleError([$apiValidationException->getMessage()], Response::HTTP_BAD_REQUEST);
-        } catch (Throwable $throwable) {
-            return $this->handleError([$throwable->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    /**
-     * @param array $errorMessages
-     * @param int   $response
-     * @return JsonResponse
-     */
-    protected function handleError(array $errorMessages, int $response): JsonResponse
-    {
-        return new JsonResponse(
-            [
-                'errorMessages' => $errorMessages,
-            ],
-            $response,
-        );
-    }
 }

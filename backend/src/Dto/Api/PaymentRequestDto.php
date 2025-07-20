@@ -5,7 +5,7 @@ namespace App\Dto\Api;
 use DateTimeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class PaymentRequestDto implements Dto
+class PaymentRequestDto
 {
     #[Assert\NotBlank]
     #[Assert\Length(max: 255)]
@@ -24,6 +24,7 @@ class PaymentRequestDto implements Dto
         pattern: '/^\d+(\.\d{1,2})?$/',
         message: 'Amount must be a valid decimal number with up to 2 decimal places.'
     )]
+    #[Assert\Positive(message: 'Amount must be greater than zero.')]
     public string $amount;
 
     #[Assert\NotBlank]
