@@ -16,7 +16,7 @@ cd .docker/
 docker compose up --build -d
 ```
 ```
-docker exec -it {PROJECT_NAME}_php /bin/sh
+docker exec -it md202507_payment_php /bin/sh
 ```
 ```
 composer install
@@ -27,7 +27,7 @@ php bin/console doctrine:migrations:migrate
 
 ### Api docs
 ```
-http://127.0.0.1:{NGINX_PORT}/api/doc
+http://127.0.0.1:3003/api/doc
 ```
 
 ### Tests
@@ -45,5 +45,10 @@ php bin/console
 ```
 php bin/console messenger:consume -vv
 ```
+
+### Tasks
+
+MD-1 Init project
+
 
 
