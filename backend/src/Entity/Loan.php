@@ -4,13 +4,14 @@ namespace App\Entity;
 
 use App\Repository\LoanRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: LoanRepository::class)]
 class Loan
 {
     #[ORM\Id]
     #[ORM\Column(type: 'string', length: 36, unique: true)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private ?string $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'loans')]
@@ -27,12 +28,8 @@ class Loan
     #[ORM\Column]
     private ?int $amount_to_pay = null;
 
-    public function __construct()
-    {
-        if ($this->id === null) {
-            $this->id = Uuid::v4()->toRfc4122();
-        }
-    }
+    #[ORM\OneToOne(mappedBy: 'loan', cascade: ['persist', 'remove'])]
+    private ?Payment $payment = null;
 
     public function getId(): ?string
     {
@@ -89,6 +86,28 @@ class Loan
     public function setAmountToPay(int $amount_to_pay): static
     {
         $this->amount_to_pay = $amount_to_pay;
+
+        return $this;
+    }
+
+    public function getPayment(): ?Payment
+    {
+        return $this->payment;
+    }
+
+    public function setPayment(?Payment $payment): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($payment === null && $this->payment !== null) {
+            $this->payment->setLoan(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($payment !== null && $payment->getLoan() !== $this) {
+            $payment->setLoan($this);
+        }
+
+        $this->payment = $payment;
 
         return $this;
     }

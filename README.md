@@ -49,6 +49,7 @@ php bin/console messenger:consume -vv
 ### Tasks
 
 MD-1 Init project
+MD-2 Create database structure
 
 
 
