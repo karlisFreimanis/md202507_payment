@@ -1,25 +1,22 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Api;
 
 use App\Dto\Api\PaymentRequestDto;
-use App\Entity\Loan;
 use App\Entity\Payment;
 use App\Exception\DuplicateEntryException;
 use App\Mapper\PaymentMapper;
 use App\Repository\LoanRepository;
 use App\Repository\PaymentRepository;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Validator\Exception\ValidatorException;
 
-class PaymentProcessingService
+readonly class PaymentImportService
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
-        private readonly PaymentMapper $paymentMapper,
-        private readonly PaymentRepository $paymentRepository,
-        private readonly LoanRepository $loanRepository,
+        private EntityManagerInterface $entityManager,
+        private PaymentMapper $paymentMapper,
+        private PaymentRepository $paymentRepository,
+        private LoanRepository $loanRepository,
     ) {
     }
 
@@ -40,10 +37,6 @@ class PaymentProcessingService
                 'loan_number' => $this->paymentMapper->extractLoanNumber($paymentRequestDto->getDescription())
             ]
         );
-
-        if (!$loan) {
-            throw new ValidatorException('Loan not found');
-        }
 
         $payment = $this->paymentMapper->mapDtoToEntity($paymentRequestDto, $loan);
 
