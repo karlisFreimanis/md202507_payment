@@ -7,6 +7,7 @@ use App\Exception\DuplicateEntryException;
 use App\Service\Api\PaymentImportApiService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class PaymentController extends BaseApiController
@@ -43,7 +44,8 @@ class PaymentController extends BaseApiController
                 $exception->getMessage(),
                 [
                     'refId' => $dto->getRefId(),
-                ]
+                ],
+                Response::HTTP_CONFLICT,
             );
         } catch (\Exception $exception) {
             return $this->defaultErrorResponse(

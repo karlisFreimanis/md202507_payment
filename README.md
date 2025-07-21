@@ -55,5 +55,6 @@ MD-4 Create draft for ShowPaymentsByDate console command
 MD-5 Clean up Payment controller introduce basic level abstraction
 MD-6 Finish basic Payment import 
 MD-7 Create command for csv import
+MD-8 Create PaymentAssignService
 
 

@@ -8,12 +8,14 @@ use App\Exception\DuplicateEntryException;
 use App\Mapper\PaymentMapper;
 use App\Repository\LoanRepository;
 use App\Repository\PaymentRepository;
+use App\Service\PaymentAssignmentService;
 use Doctrine\ORM\EntityManagerInterface;
 
 readonly class PaymentImportApiService
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
+        private PaymentAssignmentService $paymentAssignmentService,
         private PaymentMapper $paymentMapper,
         private PaymentRepository $paymentRepository,
         private LoanRepository $loanRepository,
@@ -42,6 +44,10 @@ readonly class PaymentImportApiService
 
         $this->entityManager->persist($payment);
         $this->entityManager->flush();
+
+        //I would like to move assignPayment to event queue and have nice retry mechanism
+        //but I am already sure I will not manage all
+        $this->paymentAssignmentService->assignPayment($payment);
 
         return $payment;
     }
