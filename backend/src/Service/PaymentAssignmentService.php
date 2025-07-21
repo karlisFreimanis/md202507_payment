@@ -9,15 +9,16 @@ use Doctrine\ORM\EntityManagerInterface;
 readonly class PaymentAssignmentService
 {
     public function __construct(
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private RefundService $refundService,
     ) {
     }
 
     public function assignPayment(Payment $payment): void
     {
         $loan = $payment->getLoans();
-        if (isset($loan)) {
-            //todo refund service
+        if (!isset($loan)) {
+            $this->refundService->createRefundOrder($payment, $payment->getAmount());
             return;
         }
 
@@ -39,7 +40,7 @@ readonly class PaymentAssignmentService
         if ($payment->isAssigned()) {
             return;
         }
-        //todo refund service
+        $this->refundService->createRefundOrder($payment, abs($unPaidAmount), $loan->getCustomer());
     }
 
     private function markPaymentAsPartiallyAssigned($payment): void

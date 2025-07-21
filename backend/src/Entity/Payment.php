@@ -28,6 +28,9 @@ class Payment
     #[ORM\Column(nullable: true)]
     private ?bool $is_assigned = null;
 
+    #[ORM\OneToOne(mappedBy: 'payment', cascade: ['persist', 'remove'])]
+    private ?PaymentOrder $paymentOrder = null;
+
     public function getId(): ?string
     {
         return $this->id;
@@ -92,6 +95,23 @@ class Payment
     public function setIsAssigned(?bool $is_assigned): static
     {
         $this->is_assigned = $is_assigned;
+
+        return $this;
+    }
+
+    public function getPaymentOrder(): ?PaymentOrder
+    {
+        return $this->paymentOrder;
+    }
+
+    public function setPaymentOrder(PaymentOrder $paymentOrder): static
+    {
+        // set the owning side of the relation if necessary
+        if ($paymentOrder->getPayment() !== $this) {
+            $paymentOrder->setPayment($this);
+        }
+
+        $this->paymentOrder = $paymentOrder;
 
         return $this;
     }

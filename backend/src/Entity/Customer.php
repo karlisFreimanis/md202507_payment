@@ -35,9 +35,16 @@ class Customer
     #[ORM\OneToMany(targetEntity: Loan::class, mappedBy: 'customer')]
     private Collection $loans;
 
+    /**
+     * @var Collection<int, PaymentOrder>
+     */
+    #[ORM\OneToMany(targetEntity: PaymentOrder::class, mappedBy: 'customer')]
+    private Collection $paymentOrders;
+
     public function __construct()
     {
         $this->loans = new ArrayCollection();
+        $this->paymentOrders = new ArrayCollection();
     }
 
     public function getId(): ?string
@@ -135,6 +142,36 @@ class Customer
             // set the owning side to null (unless already changed)
             if ($loan->getCustomer() === $this) {
                 $loan->setCustomer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PaymentOrder>
+     */
+    public function getPaymentOrders(): Collection
+    {
+        return $this->paymentOrders;
+    }
+
+    public function addPaymentOrder(PaymentOrder $paymentOrder): static
+    {
+        if (!$this->paymentOrders->contains($paymentOrder)) {
+            $this->paymentOrders->add($paymentOrder);
+            $paymentOrder->setCustomer($this);
+        }
+
+        return $this;
+    }
+
+    public function removePaymentOrder(PaymentOrder $paymentOrder): static
+    {
+        if ($this->paymentOrders->removeElement($paymentOrder)) {
+            // set the owning side to null (unless already changed)
+            if ($paymentOrder->getCustomer() === $this) {
+                $paymentOrder->setCustomer(null);
             }
         }
 
