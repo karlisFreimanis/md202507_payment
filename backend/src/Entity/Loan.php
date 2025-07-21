@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\LoanRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: LoanRepository::class)]
@@ -10,17 +12,11 @@ class Loan
 {
     #[ORM\Id]
     #[ORM\Column(type: 'string', length: 36, unique: true)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private ?string $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'loans')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Customer $customer = null;
-
-    #[ORM\OneToOne(inversedBy: 'loan', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Reference $reference = null;
 
     #[ORM\Column]
     private ?int $amount_issued = null;
@@ -28,8 +24,22 @@ class Loan
     #[ORM\Column]
     private ?int $amount_to_pay = null;
 
-    #[ORM\OneToOne(mappedBy: 'loan', cascade: ['persist', 'remove'])]
-    private ?Payment $payment = null;
+    /**
+     * @var Collection<int, Payment>
+     */
+    #[ORM\OneToMany(targetEntity: Payment::class, mappedBy: 'loans')]
+    private Collection $payments;
+
+    #[ORM\Column(length: 10)]
+    private ?string $loan_number = null;
+
+    #[ORM\Column]
+    private ?bool $is_paid = null;
+
+    public function __construct()
+    {
+        $this->payments = new ArrayCollection();
+    }
 
     public function getId(): ?string
     {
@@ -50,18 +60,6 @@ class Loan
     public function setCustomer(?Customer $customer): static
     {
         $this->customer = $customer;
-
-        return $this;
-    }
-
-    public function getReference(): ?Reference
-    {
-        return $this->reference;
-    }
-
-    public function setReference(Reference $reference): static
-    {
-        $this->reference = $reference;
 
         return $this;
     }
@@ -90,24 +88,56 @@ class Loan
         return $this;
     }
 
-    public function getPayment(): ?Payment
+    /**
+     * @return Collection<int, Payment>
+     */
+    public function getPayments(): Collection
     {
-        return $this->payment;
+        return $this->payments;
     }
 
-    public function setPayment(?Payment $payment): static
+    public function addPayment(Payment $payment): static
     {
-        // unset the owning side of the relation if necessary
-        if ($payment === null && $this->payment !== null) {
-            $this->payment->setLoan(null);
+        if (!$this->payments->contains($payment)) {
+            $this->payments->add($payment);
+            $payment->setLoans($this);
         }
 
-        // set the owning side of the relation if necessary
-        if ($payment !== null && $payment->getLoan() !== $this) {
-            $payment->setLoan($this);
+        return $this;
+    }
+
+    public function removePayment(Payment $payment): static
+    {
+        if ($this->payments->removeElement($payment)) {
+            // set the owning side to null (unless already changed)
+            if ($payment->getLoans() === $this) {
+                $payment->setLoans(null);
+            }
         }
 
-        $this->payment = $payment;
+        return $this;
+    }
+
+    public function getLoanNumber(): ?string
+    {
+        return $this->loan_number;
+    }
+
+    public function setLoanNumber(string $loan_number): static
+    {
+        $this->loan_number = $loan_number;
+
+        return $this;
+    }
+
+    public function isPaid(): ?bool
+    {
+        return $this->is_paid;
+    }
+
+    public function setIsPaid(bool $is_paid): static
+    {
+        $this->is_paid = $is_paid;
 
         return $this;
     }

@@ -12,8 +12,6 @@ class Customer
 {
     #[ORM\Id]
     #[ORM\Column(type: 'string', length: 36, unique: true)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private ?string $id = null;
 
     #[ORM\Column(length: 255)]
