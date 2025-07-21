@@ -38,12 +38,12 @@ php vendor/bin/phpunit --coverage-html coverage
 
 ### Console
 ```
-php bin/console
+symfony-console
 ```
 
 ### Queue
 ```
-php bin/console messenger:consume -vv
+symfony-console messenger:consume -vv
 ```
 
 ### Tasks

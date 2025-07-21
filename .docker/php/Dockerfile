@@ -53,5 +53,9 @@ RUN echo "xdebug.discover_client_host=true" >> /usr/local/etc/php/conf.d/docker-
 RUN echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/docker-xdebug.ini
 RUN echo "xdebug.client_port=9003" >> /usr/local/etc/php/conf.d/docker-xdebug.ini
 
+
+RUN printf '#!/bin/sh\nphp /var/www/symfony/bin/console "$@"\n' > /usr/local/bin/symfony-console \
+    && chmod +x /usr/local/bin/symfony-console
+
 # Set working directory
 WORKDIR /var/www/symfony
