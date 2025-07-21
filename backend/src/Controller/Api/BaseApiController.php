@@ -2,23 +2,23 @@
 
 namespace App\Controller\Api;
 
-use App\Exception\ApiValidationException;
+use App\Dto\Api\DtoInterface;
+use App\Dto\Api\PaymentRequestDto;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Throwable;
 
 class BaseApiController extends AbstractController
 {
     public function __construct(
         protected readonly ValidatorInterface $validator,
-    )
-    {
-
+        protected readonly SerializerInterface $serializer,
+    ) {
     }
 
     /**
@@ -58,5 +58,54 @@ class BaseApiController extends AbstractController
     final public function ping(): JsonResponse
     {
         return new JsonResponse(['ping' => true]);
+    }
+
+    public function validateDtoFromRequest(
+        DtoInterface $dto,
+    ): ?array {
+        $violations = $this->validator->validate($dto);
+
+        if (count($violations) > 0) {
+            $errors = [];
+            foreach ($violations as $violation) {
+                $field          = $violation->getPropertyPath();
+                $errors[$field] = $violation->getMessage();
+            }
+
+            return $errors;
+        }
+
+        return null;
+    }
+
+    final protected function defaultErrorResponse(
+        string $message,
+        array $errors,
+        int $status = Response::HTTP_BAD_REQUEST,
+    ): JsonResponse {
+        return new JsonResponse(
+            [
+                'status' => $status,
+                'success' => false,
+                'message' => $message,
+                'errors' => $errors,
+            ],
+            $status,
+        );
+    }
+
+    final protected function defaultSuccessResponse(
+        string $message,
+        array $data,
+    ): JsonResponse {
+        return new JsonResponse(
+            [
+                'status' => Response::HTTP_OK,
+                'success' => true,
+                'message' => $message,
+                'data' => $data,
+            ],
+            Response::HTTP_OK,
+        );
     }
 }

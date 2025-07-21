@@ -3,14 +3,11 @@
 namespace App\Controller\Api;
 
 use App\Dto\Api\PaymentRequestDto;
-use App\Service\PaymentProcessingService;
+use App\Exception\DuplicateEntryException;
+use App\Service\Api\PaymentImportService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\Exception\ValidatorException;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class PaymentController extends BaseApiController
 {
@@ -20,49 +17,41 @@ class PaymentController extends BaseApiController
         methods: ['POST'],
     )]
     public function payment(
-        PaymentProcessingService $paymentProcessingService,
+        PaymentImportService $paymentProcessingService,
         Request $request,
-        SerializerInterface $serializer,
-        ValidatorInterface $validator,
     ): JsonResponse {
-        $dto = $serializer->deserialize($request->getContent(), PaymentRequestDto::class, 'json');
+        try {
+            $dto = $this->serializer->deserialize($request->getContent(), PaymentRequestDto::class, 'json');
+            $dtoErrors = $this->validateDtoFromRequest($dto);
 
-        $violations = $validator->validate($dto);
-
-        if (count($violations) > 0) {
-            $errors = [];
-            foreach ($violations as $violation) {
-                $field = $violation->getPropertyPath();
-                $errors[$field] = $violation->getMessage();
+            if (isset($dtoErrors)) {
+                return $this->defaultErrorResponse(
+                    'Invalid request.',
+                    $dtoErrors,
+                );
             }
 
-            return new JsonResponse([
-                'status' => Response::HTTP_BAD_REQUEST,
-                'success' => false,
-                'error' => 'Bad Request',
-                'message' => 'Validation failed.',
-                'errors' => $errors,
-            ], Response::HTTP_BAD_REQUEST);
-        }
-
-
-        try {
             $payment = $paymentProcessingService->process($dto);
-        } catch (ValidatorException $exception) {
-            //todo 409
-            return new JsonResponse([]);
+            return $this->defaultSuccessResponse(
+                'Payment processed successfully.',
+                [
+                    'paymentId' => $payment->getId(),
+                ]
+            );
+        } catch (DuplicateEntryException $exception) {
+            return $this->defaultErrorResponse(
+                $exception->getMessage(),
+                [
+                    'refId' => $dto->getRefId(),
+                ]
+            );
         } catch (\Exception $exception) {
-            //todo
-            return new JsonResponse([]);
+            return $this->defaultErrorResponse(
+                'Unexpected error occurred.',
+                [
+                    'exception' => $exception->getMessage()
+                ],
+            );
         }
-
-        return new JsonResponse([
-            'status' => Response::HTTP_OK,
-            'success' => true,
-            'message' => 'Payment processed successfully.',
-            'data' => [
-                'paymentId' => $payment->getId(),
-            ],
-        ], Response::HTTP_OK);
     }
 }

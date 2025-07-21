@@ -52,6 +52,6 @@ MD-1 Init project
 MD-2 Create database structure
 MD-3 Create draft for api
 MD-4 Create draft for ShowPaymentsByDate console command
-
+MD-5 Clean up Payment controller introduce basic level abstraction
 
 
