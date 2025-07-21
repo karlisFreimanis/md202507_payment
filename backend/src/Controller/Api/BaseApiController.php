@@ -4,7 +4,9 @@ namespace App\Controller\Api;
 
 use App\Dto\DtoInterface;
 use OpenApi\Attributes as OA;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,6 +18,8 @@ class BaseApiController extends AbstractController
     public function __construct(
         protected readonly ValidatorInterface $validator,
         protected readonly SerializerInterface $serializer,
+        #[Autowire(service: 'monolog.logger.payment')]
+        protected readonly LoggerInterface $logger,
     ) {
     }
 
@@ -81,6 +85,7 @@ class BaseApiController extends AbstractController
         array $errors,
         int $status = Response::HTTP_BAD_REQUEST,
     ): JsonResponse {
+        $this->logger->error($message, $errors);
         return new JsonResponse(
             [
                 'status' => $status,
@@ -96,6 +101,7 @@ class BaseApiController extends AbstractController
         string $message,
         array $data,
     ): JsonResponse {
+        $this->logger->info($message, $data);
         return new JsonResponse(
             [
                 'status' => Response::HTTP_OK,

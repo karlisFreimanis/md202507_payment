@@ -5,6 +5,7 @@
     "prefer-stable": true,
     "require": {
         "php": ">=8.4",
+        "ext-bcmath": "*",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "doctrine/annotations": "*",
@@ -19,6 +20,7 @@
         "symfony/flex": "^2",
         "symfony/framework-bundle": "7.2.*",
         "symfony/messenger": "7.2.*",
+        "symfony/monolog-bundle": "*",
         "symfony/property-access": "7.2.*",
         "symfony/redis-messenger": "7.2.*",
         "symfony/runtime": "7.2.*",
@@ -29,8 +31,7 @@
         "symfony/yaml": "7.2.*",
         "twig/extra-bundle": "^3.8",
         "twig/twig": "^3.8",
-        "zircote/swagger-php": "^4.8",
-        "ext-bcmath": "*"
+        "zircote/swagger-php": "^4.8"
     },
     "config": {
         "allow-plugins": {

@@ -57,5 +57,6 @@ MD-6 Finish basic Payment import
 MD-7 Create command for csv import
 MD-8 Create PaymentAssignService
 MD-9 Create Refund
+MD-10 Configure and add logs
 
 

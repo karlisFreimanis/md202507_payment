@@ -1,0 +1,10 @@
+# config/packages/monolog.yaml
+monolog:
+  channels: ['payment']
+
+  handlers:
+    payment:
+      type: stream
+      path: '%kernel.logs_dir%/payment.log'
+      level: debug         # captures ALL levels
+      channels: ['payment']
