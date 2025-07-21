@@ -2,10 +2,11 @@
 
 namespace App\Dto\Api;
 
+use App\Dto\DtoInterface;
 use DateTimeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class PaymentRequestDto implements DtoInterface
+class PaymentRequestApiDto implements DtoInterface
 {
     #[Assert\NotBlank]
     #[Assert\Length(max: 255)]

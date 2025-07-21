@@ -2,7 +2,7 @@
 
 namespace App\Service\Api;
 
-use App\Dto\Api\PaymentRequestDto;
+use App\Dto\Api\PaymentRequestApiDto;
 use App\Entity\Payment;
 use App\Exception\DuplicateEntryException;
 use App\Mapper\PaymentMapper;
@@ -10,7 +10,7 @@ use App\Repository\LoanRepository;
 use App\Repository\PaymentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-readonly class PaymentImportService
+readonly class PaymentImportApiService
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
@@ -21,11 +21,11 @@ readonly class PaymentImportService
     }
 
     /**
-     * @param PaymentRequestDto $paymentRequestDto
+     * @param PaymentRequestApiDto $paymentRequestDto
      * @return Payment
      * @throws DuplicateEntryException
      */
-    public function process(PaymentRequestDto $paymentRequestDto): Payment
+    public function process(PaymentRequestApiDto $paymentRequestDto): Payment
     {
         $existing = $this->paymentRepository->findOneBy(['id' => $paymentRequestDto->getRefId()]);
         if (isset($existing)) {
