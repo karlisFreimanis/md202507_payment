@@ -45,6 +45,7 @@ http://127.0.0.1:3003/api/doc
 - MD-11 Generate/write some test -> php vendor/bin/phpunit --testdox
 - MD-12 Remove irrelevant template files
 - MD-13 Format README
+- MD-14 Quick AI generated docs for /api/payment
 
 #### It is the draft not solution. Not enough time for
 
