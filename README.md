@@ -22,23 +22,12 @@ docker exec -it md202507_payment_php /bin/sh
 composer install
 ```
 ```
-php bin/console doctrine:migrations:migrate
+symfony-console doctrine:migrations:migrate
 ```
 
 ### Api docs
 ```
 http://127.0.0.1:3003/api/doc
-```
-
-### Tests
-phpunit.xml.dist
-```
-php vendor/bin/phpunit --coverage-html coverage
-```
-
-### Console
-```
-symfony-console
 ```
 
 ### Queue
@@ -58,5 +47,6 @@ MD-7 Create command for csv import
 MD-8 Create PaymentAssignService
 MD-9 Create Refund
 MD-10 Configure and add logs
+MD-11 Generate/write some test -> php vendor/bin/phpunit --testdox
 
 
