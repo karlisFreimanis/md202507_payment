@@ -46,7 +46,8 @@ MD-6 Finish basic Payment import
 MD-7 Create command for csv import
 MD-8 Create PaymentAssignService
 MD-9 Create Refund
-MD-10 Configure and add logs
+MD-10 Configure and add logs -> /var/log/payment.log
 MD-11 Generate/write some test -> php vendor/bin/phpunit --testdox
+MD-12 Remove irrelevant template files
 
 
