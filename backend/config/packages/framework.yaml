@@ -6,7 +6,7 @@ framework:
 
         routing:
             # async is whatever name you gave your transport above
-            'App\Message\DummyMessage': async
+            #'App\Message\DummyMessage': async
     secret: '%env(APP_SECRET)%'
     #csrf_protection: true
 
